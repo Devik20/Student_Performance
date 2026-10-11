@@ -1,11 +1,13 @@
-
 def calculate_cgpa(grade_points):
     """Calculate CGPA from a list of grade points."""
     if not grade_points:
         raise ValueError("Grade points cannot be empty.")
 
-    if any(point < 0 or point > 10 for point in grade_points):
-        raise ValueError("Grade points must be between 0 and 10.")
+    if any(
+        not isinstance(point, (int, float)) or point < 0 or point > 10
+        for point in grade_points
+    ):
+        raise ValueError("Grade points must be numeric and between 0 and 10.")
 
     return round(sum(grade_points) / len(grade_points), 2)
 
@@ -18,10 +20,14 @@ def main():
         if not name:
             raise ValueError("Student name cannot be empty.")
 
-        values = input(
-            "Enter grade points separated by spaces (0-10): "
-        )
-        grade_points = [float(value) for value in values.split()]
+        values = input("Enter grade points separated by spaces (0-10): ").strip()
+        if not values:
+            raise ValueError("Grade points cannot be empty.")
+
+        try:
+            grade_points = [float(value) for value in values.split()]
+        except ValueError as exc:
+            raise ValueError("Grade points must be numeric.") from exc
 
         cgpa = calculate_cgpa(grade_points)
 
